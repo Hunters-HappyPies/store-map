@@ -50,22 +50,12 @@ L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.png
 // Custom orange circle icon
 const circleIcon = L.divIcon({ className: 'circle-marker' });
 
-// Add store markers with popups
+// Add store markers
 const markers = [];
 stores.forEach(store => {
-    const marker = L.marker([store.lat, store.lng], { icon: circleIcon }).addTo(map);
-
-    // Google Maps directions link
-    const mapsLink = `https://www.google.com/maps/search/?api=1&query=${store.lat},${store.lng}`;
-
-    // Popup content
-    const popupContent = `
-        <strong>${store.name}</strong><br>
-        ${store.address}<br>
-        <a href="${mapsLink}" target="_blank">Get Directions</a>
-    `;
-
-    marker.bindPopup(popupContent);
+    const marker = L.marker([store.lat, store.lng], { icon: circleIcon })
+        .addTo(map)
+        .bindPopup(`<strong>${store.name}</strong>`);
     markers.push(marker);
 });
 
@@ -73,7 +63,10 @@ stores.forEach(store => {
 const group = new L.featureGroup(markers);
 map.fitBounds(group.getBounds().pad(0.2));
 
-// Fix rendering inside iframes (like Cargo)
+// Google Maps directions link
+const mapsLink = `https://www.google.com/maps/search/?api=1&query=${store.lat},${store.lng}`;
+  
+// Fix rendering if inside iframe
 setTimeout(() => { map.invalidateSize(); }, 500);
 </script>
 
