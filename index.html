@@ -31,6 +31,17 @@ html, body { height: 100%; margin: 0; font-family: sans-serif; }
 /* Map container */
 #map { flex: 1; }
 
+/* Custom orange circle markers */
+.leaflet-marker-icon.circle-marker {
+  border-radius: 50%;
+  background-color: #EBA35C !important;
+  width: 20px;
+  height: 20px;
+  margin-left: -10px;
+  margin-top: -10px;
+  border: 2px solid white;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   #container { flex-direction: column; }
@@ -67,12 +78,15 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
   maxZoom: 19
 }).addTo(map);
 
+// Create custom orange circle icon
+const circleIcon = L.divIcon({ className: 'circle-marker' });
+
 const markers = [];
 const locationList = document.getElementById('location-list');
 
-stores.forEach((store, index) => {
-  // Add marker
-  const marker = L.marker([store.lat, store.lng])
+stores.forEach(store => {
+  // Add marker with orange circle
+  const marker = L.marker([store.lat, store.lng], { icon: circleIcon })
     .addTo(map)
     .bindPopup(`<strong>${store.name}</strong>`);
   markers.push(marker);
@@ -81,12 +95,10 @@ stores.forEach((store, index) => {
   const item = document.createElement('div');
   item.className = 'location-item';
   item.textContent = store.name;
-
   item.addEventListener('click', () => {
     map.setView([store.lat, store.lng], 14);
     marker.openPopup();
 
-    // Highlight active store
     document.querySelectorAll('.location-item').forEach(el => el.classList.remove('active'));
     item.classList.add('active');
   });
@@ -98,7 +110,7 @@ stores.forEach((store, index) => {
 const group = new L.featureGroup(markers);
 map.fitBounds(group.getBounds().pad(0.2));
 
-// Fix rendering issues in iframes or Cargo
+// Fix rendering in iframes / Cargo
 setTimeout(() => { map.invalidateSize(); }, 500);
 </script>
 
