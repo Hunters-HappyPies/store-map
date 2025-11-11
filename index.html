@@ -28,11 +28,18 @@ html, body {
 /* Left panel */
 #locations {
   width: 280px;
-  background: #EAEBEB;
+  background: #FFF6E0;
   color: #EBA35C;
   padding: 20px;
   box-sizing: border-box;
   overflow-y: auto;
+  font-size: 14px; /* 2px smaller */
+}
+#locations h2 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 16px; /* slightly smaller than default */
+  color: #EBA35C;
 }
 .location-item {
   margin-bottom: 15px;
@@ -80,6 +87,7 @@ html, body {
 
 <div id="container">
   <div id="locations">
+    <h2>Where to find us</h2>
     <div id="location-list"></div>
   </div>
   <div id="map"></div>
@@ -95,9 +103,10 @@ const stores = [
 
 // Initialize map
 const map = L.map('map');
+
 // Greyscale base map (Carto Light) without attribution
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-  attribution: '', // <-- removes copyright
+  attribution: '',
   subdomains: 'abcd',
   maxZoom: 19
 }).addTo(map);
@@ -120,10 +129,10 @@ stores.forEach(store => {
   marker.bindPopup(popupContent);
   markers.push(marker);
 
-  // Left panel list
+  // Left panel list with address
   const item = document.createElement('div');
   item.className = 'location-item';
-  item.textContent = store.name;
+  item.innerHTML = `<strong>${store.name}</strong><br><small>${store.address}</small>`;
   item.addEventListener('click', () => {
     map.setView([store.lat, store.lng], 14);
     marker.openPopup();
@@ -137,12 +146,10 @@ stores.forEach(store => {
 const group = L.featureGroup(markers);
 map.fitBounds(group.getBounds().pad(0.2));
 
-// Fix rendering if embedded (Cargo, GitHub)
+// Fix rendering if embedded
 setTimeout(() => map.invalidateSize(), 500);
 window.addEventListener('resize', () => map.invalidateSize());
 </script>
 
 </body>
 </html>
-
-
