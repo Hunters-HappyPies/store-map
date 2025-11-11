@@ -3,17 +3,51 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>store map (Greyscale)</title>
+<title>Store Locator Map</title>
+
+<!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <style>
-html, body { height: 100%; margin: 0; }
-#map { height: 100vh; }
+html, body { height: 100%; margin: 0; font-family: sans-serif; }
+#container { display: flex; height: 100vh; }
+
+/* Left panel */
+#locations {
+  width: 250px;
+  min-width: 200px;
+  background: #FFF6E0;
+  color: #EBA35C;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+#locations h2 { margin-top:0; color:#EBA35C; }
+.location-item { margin-bottom: 15px; cursor: pointer; transition: transform 0.1s; }
+.location-item:hover { transform: scale(1.05); }
+.location-item.active { font-weight: bold; text-decoration: underline; }
+
+/* Map container */
+#map { flex: 1; }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #container { flex-direction: column; }
+  #locations { width: 100%; height: auto; max-height: 200px; overflow-y: scroll; }
+  #map { height: calc(100vh - 200px); }
+}
 </style>
 </head>
 <body>
 
-<div id="map"></div>
+<div id="container">
+  <div id="locations">
+    <h2>Where to find us?</h2>
+    <div id="location-list"></div>
+  </div>
+  <div id="map"></div>
+</div>
 
 <script>
 const stores = [
@@ -23,9 +57,10 @@ const stores = [
   { name: "Delaney's Irish Pub", lat: 51.209686840929905, lng: 3.226991112393724 }
 ];
 
+// Initialize map
 const map = L.map('map');
 
-// GREYSCALE TILE LAYER (replace the previous OSM tiles)
+// GREYSCALE TILE LAYER
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
   subdomains: 'abcd',
@@ -33,16 +68,38 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
 }).addTo(map);
 
 const markers = [];
+const locationList = document.getElementById('location-list');
 
-stores.forEach(store => {
+stores.forEach((store, index) => {
+  // Add marker
   const marker = L.marker([store.lat, store.lng])
     .addTo(map)
     .bindPopup(`<strong>${store.name}</strong>`);
   markers.push(marker);
+
+  // Add item to left panel
+  const item = document.createElement('div');
+  item.className = 'location-item';
+  item.textContent = store.name;
+
+  item.addEventListener('click', () => {
+    map.setView([store.lat, store.lng], 14);
+    marker.openPopup();
+
+    // Highlight active store
+    document.querySelectorAll('.location-item').forEach(el => el.classList.remove('active'));
+    item.classList.add('active');
+  });
+
+  locationList.appendChild(item);
 });
 
+// Fit map to show all markers
 const group = new L.featureGroup(markers);
 map.fitBounds(group.getBounds().pad(0.2));
+
+// Fix rendering issues in iframes or Cargo
+setTimeout(() => { map.invalidateSize(); }, 500);
 </script>
 
 </body>
