@@ -31,16 +31,16 @@ html, body { height: 100%; margin: 0; }
 
 <script>
 const stores = [
-  { name: "O'Fiach's Irish Pub & Restaurant", lat: 51.02776844577999, lng: 4.481041039370103, address: "Grote Markt 24, 2800 Mechelen" },
-  { name: "Tømmer Catering", lat: 51.06274749843587, lng: 4.6549262682076185, address: "Houwstraat 20, 2580 Putte" },
-  { name: "Patrick Foley's Irish Pub and Restaurant", lat: 51.05057746413051, lng: 3.719207776150486, address: "Recollettenlei 10, 9000 Gent" },
-  { name: "Delaney's Irish Pub", lat: 51.209686840929905, lng: 3.226991112393724, address: "Burg 8, 8000 Brugge" }
+  { name: "O'Fiach's Irish Pub & Restaurant", lat: 51.02776844577999, lng: 4.481041039370103 },
+  { name: "Tømmer Catering", lat: 51.06274749843587, lng: 4.6549262682076185 },
+  { name: "Patrick Foley's Irish Pub and Restaurant", lat: 51.05057746413051, lng: 3.719207776150486 },
+  { name: "Delaney's Irish Pub", lat: 51.209686840929905, lng: 3.226991112393724 }
 ];
 
 // Initialize map
 const map = L.map('map');
 
-// Stamen Toner Lite tiles (greyscale)
+// Add Stamen Toner Lite tiles (greyscale)
 L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.png', {
     attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
     subdomains: 'abcd',
@@ -63,9 +63,6 @@ stores.forEach(store => {
 const group = new L.featureGroup(markers);
 map.fitBounds(group.getBounds().pad(0.2));
 
-// Google Maps directions link
-const mapsLink = `https://www.google.com/maps/search/?api=1&query=${store.lat},${store.lng}`;
-  
 // Fix rendering if inside iframe
 setTimeout(() => { map.invalidateSize(); }, 500);
 </script>
