@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>store map</title>
+<title>Store Locations Map</title>
 
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -14,6 +14,17 @@
 <style>
   html, body { height: 100%; margin: 0; }
   #map { height: 100vh; }
+
+  /* Orange circular markers */
+  .leaflet-marker-icon.circle-marker {
+    border-radius: 50%;
+    background-color: #EBA35C;
+    width: 20px;
+    height: 20px;
+    margin-left: -10px;
+    margin-top: -10px;
+    border: 2px solid white;
+  }
 </style>
 </head>
 <body>
@@ -21,8 +32,15 @@
 <div id="map"></div>
 
 <script>
-  // Initialize the map and set its center and zoom
-  const map = L.map('map').setView([51.505, -0.09], 13);
+  const stores = [
+    { name: "O'Fiach's Irish Pub & Restaurant", lat: 51.02776844577999, lng: 4.481041039370103 },
+    { name: "Tømmer Catering", lat: 51.06274749843587, lng: 4.6549262682076185 },
+    { name: "Patrick Foley's Irish Pub and Restaurant", lat: 51.05057746413051, lng: 3.719207776150486 },
+    { name: "Delaney's Irish Pub", lat: 51.209686840929905, lng: 3.226991112393724 }
+  ];
+
+  // Initialize the map
+  const map = L.map('map');
 
   // Add OpenStreetMap tiles
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -30,18 +48,24 @@
     maxZoom: 19
   }).addTo(map);
 
-  // Add a marker
-  L.marker([51.5, -0.09]).addTo(map)
-    .bindPopup('Hello! I am a marker.')
-    .openPopup();
+  // Custom orange circle icon
+  const circleIcon = L.divIcon({ className: 'circle-marker' });
+  const markers = [];
 
-  // Add a circle
-  L.circle([51.508, -0.11], {
-    color: 'red',
-    fillColor: '#f03',
-    fillOpacity: 0.5,
-    radius: 500
-  }).addTo(map);
+  // Add markers for each store
+  stores.forEach(store => {
+    const marker = L.marker([store.lat, store.lng], { icon: circleIcon })
+      .addTo(map)
+      .bindPopup(`<strong>${store.name}</strong>`);
+    markers.push(marker);
+  });
+
+  // Fit map to show all markers
+  const group = new L.featureGroup(markers);
+  map.fitBounds(group.getBounds().pad(0.2));
+
+  // Fix rendering issues (optional, for GitHub Pages or iframes)
+  setTimeout(() => { map.invalidateSize(); }, 1000);
 </script>
 
 </body>
