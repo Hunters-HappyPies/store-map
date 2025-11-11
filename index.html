@@ -3,11 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>store map</title>
+<title>Store Locator Map</title>
 
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Google Fonts: Playfair Display -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
 html, body { height: 100%; margin: 0; font-family: sans-serif; }
@@ -22,6 +25,7 @@ html, body { height: 100%; margin: 0; font-family: sans-serif; }
   padding: 20px;
   box-sizing: border-box;
   overflow-y: auto;
+  font-family: 'Playfair Display', serif; /* <-- font changed here */
 }
 #locations h2 { margin-top:0; color:#EBA35C; }
 .location-item { margin-bottom: 15px; cursor: pointer; transition: transform 0.1s; }
@@ -78,13 +82,13 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
   maxZoom: 19
 }).addTo(map);
 
-// Create custom orange circle icon
+// Custom orange circle icon
 const circleIcon = L.divIcon({ className: 'circle-marker' });
 
 const markers = [];
 const locationList = document.getElementById('location-list');
 
-stores.forEach(store => {
+stores.forEach((store) => {
   // Add marker with orange circle
   const marker = L.marker([store.lat, store.lng], { icon: circleIcon })
     .addTo(map)
