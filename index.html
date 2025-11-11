@@ -3,15 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Store Locations Map</title>
-
-<!-- Leaflet CSS -->
+<title>Store Locations Map (Greyscale)</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
 <style>
-  html, body { height: 100%; margin: 0; }
-  #map { height: 100vh; }
+html, body { height: 100%; margin: 0; }
+#map { height: 100vh; }
 </style>
 </head>
 <body>
@@ -19,37 +16,33 @@
 <div id="map"></div>
 
 <script>
-  // Store locations
-  const stores = [
-    { name: "O'Fiach's Irish Pub & Restaurant", lat: 51.02776844577999, lng: 4.481041039370103 },
-    { name: "Tømmer Catering", lat: 51.06274749843587, lng: 4.6549262682076185 },
-    { name: "Patrick Foley's Irish Pub and Restaurant", lat: 51.05057746413051, lng: 3.719207776150486 },
-    { name: "Delaney's Irish Pub", lat: 51.209686840929905, lng: 3.226991112393724 }
-  ];
+const stores = [
+  { name: "O'Fiach's Irish Pub & Restaurant", lat: 51.02776844577999, lng: 4.481041039370103 },
+  { name: "Tømmer Catering", lat: 51.06274749843587, lng: 4.6549262682076185 },
+  { name: "Patrick Foley's Irish Pub and Restaurant", lat: 51.05057746413051, lng: 3.719207776150486 },
+  { name: "Delaney's Irish Pub", lat: 51.209686840929905, lng: 3.226991112393724 }
+];
 
-  // Initialize the map
-  const map = L.map('map');
+const map = L.map('map');
 
-  // Add OpenStreetMap tiles
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
-    subdomains: 'abcd',
-    maxZoom: 19
+// GREYSCALE TILE LAYER (replace the previous OSM tiles)
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+  subdomains: 'abcd',
+  maxZoom: 19
 }).addTo(map);
 
-  const markers = [];
+const markers = [];
 
-  // Add a default Leaflet marker for each store
-  stores.forEach(store => {
-    const marker = L.marker([store.lat, store.lng])
-      .addTo(map)
-      .bindPopup(`<strong>${store.name}</strong>`);
-    markers.push(marker);
-  });
+stores.forEach(store => {
+  const marker = L.marker([store.lat, store.lng])
+    .addTo(map)
+    .bindPopup(`<strong>${store.name}</strong>`);
+  markers.push(marker);
+});
 
-  // Fit map to show all markers
-  const group = new L.featureGroup(markers);
-  map.fitBounds(group.getBounds().pad(0.2));
+const group = new L.featureGroup(markers);
+map.fitBounds(group.getBounds().pad(0.2));
 </script>
 
 </body>
