@@ -7,24 +7,11 @@
 
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-
-<!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <style>
   html, body { height: 100%; margin: 0; }
   #map { height: 100vh; }
-
-  /* Orange circular markers */
-  .leaflet-marker-icon.circle-marker {
-    border-radius: 50%;
-    background-color: #EBA35C;
-    width: 20px;
-    height: 20px;
-    margin-left: -10px;
-    margin-top: -10px;
-    border: 2px solid white;
-  }
 </style>
 </head>
 <body>
@@ -32,6 +19,7 @@
 <div id="map"></div>
 
 <script>
+  // Store locations
   const stores = [
     { name: "O'Fiach's Irish Pub & Restaurant", lat: 51.02776844577999, lng: 4.481041039370103 },
     { name: "Tømmer Catering", lat: 51.06274749843587, lng: 4.6549262682076185 },
@@ -48,13 +36,11 @@
     maxZoom: 19
   }).addTo(map);
 
-  // Custom orange circle icon
-  const circleIcon = L.divIcon({ className: 'circle-marker' });
   const markers = [];
 
-  // Add markers for each store
+  // Add a default Leaflet marker for each store
   stores.forEach(store => {
-    const marker = L.marker([store.lat, store.lng], { icon: circleIcon })
+    const marker = L.marker([store.lat, store.lng])
       .addTo(map)
       .bindPopup(`<strong>${store.name}</strong>`);
     markers.push(marker);
@@ -63,9 +49,6 @@
   // Fit map to show all markers
   const group = new L.featureGroup(markers);
   map.fitBounds(group.getBounds().pad(0.2));
-
-  // Fix rendering issues (optional, for GitHub Pages or iframes)
-  setTimeout(() => { map.invalidateSize(); }, 1000);
 </script>
 
 </body>
