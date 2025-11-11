@@ -3,37 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>store map</title>
+<title>Store Map</title>
 
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<!-- Google Fonts: Playfair Display -->
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
-
 <style>
-html, body { height: 100%; margin: 0; font-family: sans-serif; }
-#container { display: flex; height: 100vh; }
-
-/* Left panel */
-#locations {
-  width: 250px;
-  min-width: 200px;
-  background: #FFF6E0;
-  color: #EBA35C;
-  padding: 20px;
-  box-sizing: border-box;
-  overflow-y: auto;
-  font-family: 'Playfair Display', serif; /* <-- font changed here */
-}
-#locations h2 { margin-top:0; color:#EBA35C; }
-.location-item { margin-bottom: 15px; cursor: pointer; transition: transform 0.1s; }
-.location-item:hover { transform: scale(1.05); }
-.location-item.active { font-weight: bold; text-decoration: underline; }
-
-/* Map container */
-#map { flex: 1; }
+html, body { height: 100%; margin: 0; }
+#map { width: 100%; height: 100vh; }
 
 /* Custom orange circle markers */
 .leaflet-marker-icon.circle-marker {
@@ -45,75 +23,57 @@ html, body { height: 100%; margin: 0; font-family: sans-serif; }
   margin-top: -10px;
   border: 2px solid white;
 }
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  #container { flex-direction: column; }
-  #locations { width: 100%; height: auto; max-height: 200px; overflow-y: scroll; }
-  #map { height: calc(100vh - 200px); }
-}
 </style>
 </head>
 <body>
 
-<div id="container">
-  <div id="locations">
-    <div id="location-list"></div>
-  </div>
-  <div id="map"></div>
-</div>
+<div id="map"></div>
 
 <script>
 const stores = [
-  { name: "O'Fiach's Irish Pub & Restaurant", lat: 51.02776844577999, lng: 4.481041039370103 },
-  { name: "Tømmer Catering", lat: 51.06274749843587, lng: 4.6549262682076185 },
-  { name: "Patrick Foley's Irish Pub and Restaurant", lat: 51.05057746413051, lng: 3.719207776150486 },
-  { name: "Delaney's Irish Pub", lat: 51.209686840929905, lng: 3.226991112393724 }
+  { name: "O'Fiach's Irish Pub & Restaurant", lat: 51.02776844577999, lng: 4.481041039370103, address: "Grote Markt 24, 2800 Mechelen" },
+  { name: "Tømmer Catering", lat: 51.06274749843587, lng: 4.6549262682076185, address: "Houwstraat 20, 2580 Putte" },
+  { name: "Patrick Foley's Irish Pub and Restaurant", lat: 51.05057746413051, lng: 3.719207776150486, address: "Recollettenlei 10, 9000 Gent" },
+  { name: "Delaney's Irish Pub", lat: 51.209686840929905, lng: 3.226991112393724, address: "Burg 8, 8000 Brugge" }
 ];
 
 // Initialize map
 const map = L.map('map');
 
-// GREYSCALE TILE LAYER
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
-  subdomains: 'abcd',
-  maxZoom: 19
+// Stamen Toner Lite tiles (greyscale)
+L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.png', {
+    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
+    subdomains: 'abcd',
+    maxZoom: 20
 }).addTo(map);
 
 // Custom orange circle icon
 const circleIcon = L.divIcon({ className: 'circle-marker' });
 
+// Add store markers with popups
 const markers = [];
-const locationList = document.getElementById('location-list');
+stores.forEach(store => {
+    const marker = L.marker([store.lat, store.lng], { icon: circleIcon }).addTo(map);
 
-stores.forEach((store) => {
-  // Add marker with orange circle
-  const marker = L.marker([store.lat, store.lng], { icon: circleIcon })
-    .addTo(map)
-    .bindPopup(`<strong>${store.name}</strong>`);
-  markers.push(marker);
+    // Google Maps directions link
+    const mapsLink = `https://www.google.com/maps/search/?api=1&query=${store.lat},${store.lng}`;
 
-  // Add item to left panel
-  const item = document.createElement('div');
-  item.className = 'location-item';
-  item.textContent = store.name;
-  item.addEventListener('click', () => {
-    map.setView([store.lat, store.lng], 14);
-    marker.openPopup();
+    // Popup content
+    const popupContent = `
+        <strong>${store.name}</strong><br>
+        ${store.address}<br>
+        <a href="${mapsLink}" target="_blank">Get Directions</a>
+    `;
 
-    document.querySelectorAll('.location-item').forEach(el => el.classList.remove('active'));
-    item.classList.add('active');
-  });
-
-  locationList.appendChild(item);
+    marker.bindPopup(popupContent);
+    markers.push(marker);
 });
 
 // Fit map to show all markers
 const group = new L.featureGroup(markers);
 map.fitBounds(group.getBounds().pad(0.2));
 
-// Fix rendering in iframes / Cargo
+// Fix rendering inside iframes (like Cargo)
 setTimeout(() => { map.invalidateSize(); }, 500);
 </script>
 
