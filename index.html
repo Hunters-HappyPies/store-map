@@ -19,6 +19,7 @@ html, body {
   font-family: 'Playfair Display', serif;
 }
 
+/* Main layout */
 #container {
   display: flex;
   height: 100vh;
@@ -46,7 +47,7 @@ html, body {
   text-decoration: underline;
 }
 
-/* Map styling */
+/* Map */
 #map {
   flex: 1;
   height: 100vh;
@@ -63,19 +64,14 @@ html, body {
   border: 2px solid white;
 }
 
-/* Responsive: stack vertically on small screens */
+/* Hide left panel on small screens */
 @media (max-width: 768px) {
-  #container {
-    flex-direction: column;
-  }
   #locations {
-    width: 100%;
-    height: auto;
-    max-height: 200px;
-    overflow-y: scroll;
+    display: none;
   }
   #map {
-    height: calc(100vh - 200px);
+    width: 100%;
+    height: 100vh;
   }
 }
 </style>
@@ -91,12 +87,12 @@ html, body {
 
 <script>
 const stores = [
-  { name: "O'Fiach's Irish Pub & Restaurant", lat: 51.02771280232165, lng: 4.481609367647963, address: "Grote Markt 24, 2800 Mechelen" },
-  { name: "Tømmer Catering", lat: 51.06278795485761, lng: 4.655451981143754, address: "Houwstraat 20, 2580 Putte" },
-  { name: "Patrick Foley's Irish Pub and Restaurant", lat: 51.05015927419043, lng: 3.7199909792949937, address: "Recollettenlei 10, 9000 Gent" },
-  { name: "Delaney's Irish Pub", lat: 51.20964644017039, lng: 3.227366605361677, address: "Burg 8, 8000 Brugge" }
+  { name: "O'Fiach's Irish Pub & Restaurant", lat: 51.02776844577999, lng: 4.481041039370103, address: "Grote Markt 24, 2800 Mechelen" },
+  { name: "Tømmer Catering", lat: 51.06274749843587, lng: 4.6549262682076185, address: "Houwstraat 20, 2580 Putte" },
+  { name: "Patrick Foley's Irish Pub and Restaurant", lat: 51.05057746413051, lng: 3.719207776150486, address: "Recollettenlei 10, 9000 Gent" },
+  { name: "Delaney's Irish Pub", lat: 51.209686840929905, lng: 3.226991112393724, address: "Burg 8, 8000 Brugge" }
 ];
-  
+
 // Initialize map
 const map = L.map('map');
 
@@ -112,6 +108,7 @@ const circleIcon = L.divIcon({ className: 'circle-marker' });
 const markers = [];
 const list = document.getElementById('location-list');
 
+// Add markers + side list
 stores.forEach(store => {
   const marker = L.marker([store.lat, store.lng], { icon: circleIcon }).addTo(map);
 
@@ -124,6 +121,7 @@ stores.forEach(store => {
   marker.bindPopup(popupContent);
   markers.push(marker);
 
+  // Left panel list
   const item = document.createElement('div');
   item.className = 'location-item';
   item.textContent = store.name;
@@ -136,14 +134,16 @@ stores.forEach(store => {
   list.appendChild(item);
 });
 
-// Fit map to all markers
+// Fit to markers
 const group = L.featureGroup(markers);
 map.fitBounds(group.getBounds().pad(0.2));
 
-// Ensure proper map display (GitHub/Cargo)
+// Fix rendering if embedded (Cargo, GitHub)
 setTimeout(() => map.invalidateSize(), 500);
 window.addEventListener('resize', () => map.invalidateSize());
 </script>
 
 </body>
 </html>
+
+
